@@ -9,19 +9,25 @@ pipeline {
 
         stage('Install') {
             steps {
-                sh 'npm install'
+                dir('angular-app-kubernetes') {
+                    sh 'npm install'
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm run test -- --watch=false --browsers=ChromeHeadless'
+                dir('angular-app-kubernetes') {
+                    sh 'npm run test -- --watch=false --browsers=ChromeHeadless'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                sh 'npm run build --prod'
+                dir('angular-app-kubernetes') {
+                    sh 'npm run build --prod'
+                }
             }
         }
     }
