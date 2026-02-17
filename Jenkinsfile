@@ -2,8 +2,12 @@ pipeline {
     agent any
 
         tools {
+            
             nodejs "node10"
+            sonarScanner "SonarScanner"   // name you set in Global Tool Config
+
         }
+
     stages {
 
         stage('Install') {
