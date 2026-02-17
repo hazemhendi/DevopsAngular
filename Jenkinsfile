@@ -31,5 +31,34 @@ pipeline {
                 }
             }
         }
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir('angular-app-kubernetes') {
+                    withSonarQubeEnv('SonarQube') {  // Name from Jenkins config
+                        sh 'sonar-scanner -Dsonar.projectKey=angular-app -Dsonar.sources=src'
+                    }
+                }
+            }
+        }
+
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed. Check logs!"
+        }
     }
 }
