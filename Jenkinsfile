@@ -1,12 +1,16 @@
 pipeline {
     agent any
 
+        tools {
+            nodejs "node10"
+        }
     stages {
 
         stage('Install') {
             steps {
                 dir('angular-app-kubernetes') {
                     sh 'node -v'
+                    sh 'npm -v'
                     sh 'npm install'
                 }
             }
