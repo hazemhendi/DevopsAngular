@@ -1,15 +1,12 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "node18"
-    }
-
     stages {
 
         stage('Install') {
             steps {
                 dir('angular-app-kubernetes') {
+                    sh 'node -v'
                     sh 'npm install'
                 }
             }
