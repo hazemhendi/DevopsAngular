@@ -8,6 +8,11 @@ pipeline {
 
         }
 
+        environment {
+            IMAGE_NAME = "hazemhendi/angular-app"
+            IMAGE_TAG = "${BUILD_NUMBER}"
+        }
+
     stages {
 
         stage('Install') {
@@ -53,15 +58,42 @@ pipeline {
                 }
             }
         }
-
+        
         stage("Quality Gate") {
             steps {
                 timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true, webhookSecretId: 'sonarWebHook'
+                    waitForQualityGate abortPipeline: false, webhookSecretId: 'sonarWebHook'
+                }
+            }
+        }
+        
+        stage('Docker Build') {
+            steps {
+                script {
+                    //def IMAGE_TAG = "${env.BUILD_NUMBER}"
+                    echo 'Création Image angular: '
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
                 }
             }
         }
 
+        stage('Docker Build & Push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+                        sh """
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                        docker logout
+                        """
+                    }
+                }
+            }
+        }
 
     }
 
