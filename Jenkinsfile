@@ -42,10 +42,12 @@ pipeline {
                     withSonarQubeEnv('SonarQube') {  // Name from Jenkins config
                         //sh 'sonar-scanner -Dsonar.projectKey=angular-app -Dsonar.sources=src'
                         // Get the path to the scanner installed in Jenkins
-                        def scannerHome = tool name: 'SonarQube Scanner 8.0.1.6346', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                        script {
+                            def scannerHome = tool name: 'SonarQube Scanner 8.0.1.6346', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 
-                        // Run scanner using full path
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=angular-app -Dsonar.sources=src"
+                            // Run scanner using full path
+                            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=angular-app -Dsonar.sources=src"
+                        }
             
                     }
                 }
