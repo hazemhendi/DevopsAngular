@@ -69,6 +69,10 @@ pipeline {
         */
 
          // This stage pauses the pipeline and waits for you to click "Proceed"
+         
+        /*
+        // Generate a Google App Password for this to work 
+
         stage('Wait for Approval') {
             steps {
                 script {
@@ -85,6 +89,7 @@ pipeline {
                 }
             }
         }
+        */
 
         stage('Merge to Main') {
             steps {
