@@ -67,6 +67,47 @@ pipeline {
             }
         }
         */
+
+         // This stage pauses the pipeline and waits for you to click "Proceed"
+        stage('Wait for Approval') {
+            steps {
+                script {
+                    // Send email notification that approval is needed
+                    emailext (
+                        subject: "Jenkins Pipeline Needs Approval: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                        body: """<p>Pipeline is waiting for your approval to merge to main and build Docker image.</p>
+                                <p>Click <a href="${env.BUILD_URL}input">here</a> to approve or abort.</p>""",
+                        to: 'hazeam22@gmail.com' // Replace with your email
+                    )
+                    
+                    // Pause execution until user input
+                    input message: 'Approve Merge to Main and Docker Build?', ok: 'Proceed'
+                }
+            }
+        }
+
+        stage('Merge to Main') {
+            steps {
+                script {
+                    // Logic to merge dev to main
+                    withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        sh '''
+                            git config user.email "MohamedHazem.HENDI@esprit.tn"
+                            git config user.name "Jenkins CI"
+
+                            git checkout main
+                            git pull origin main
+
+                            git merge dev
+
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mohamedhazemhendi/DevopsAngular.git main
+                        '''
+                    }
+                }
+            }
+        }
+
+
         stage('Docker Build') {
             steps {
                 dir('angular-app-kubernetes') {
@@ -101,12 +142,23 @@ pipeline {
 
     }
 
+
     post {
         success {
-            echo "Pipeline completed successfully!"
+            emailext (
+                subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """<p>Pipeline completed successfully!</p>
+                        <p>Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}</p>""",
+                to: 'hazeam22@gmail.com'
+            )
         }
         failure {
-            echo "Pipeline failed. Check logs!"
+            emailext (
+                subject: "FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """<p>Pipeline failed. Check the logs at <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                        <p>Stage failed: ${env.STAGE_NAME}</p>""",
+                to: 'hazeam22@gmail.com'
+            )
         }
     }
 }
