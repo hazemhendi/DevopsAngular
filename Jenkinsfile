@@ -70,26 +70,28 @@ pipeline {
 
          // This stage pauses the pipeline and waits for you to click "Proceed"
 
-        /*
+        
         // Generate a Google App Password for this to work 
 
         stage('Wait for Approval') {
             steps {
                 script {
                     // Send email notification that approval is needed
+                    /*
                     emailext (
                         subject: "Jenkins Pipeline Needs Approval: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                         body: """<p>Pipeline is waiting for your approval to merge to main and build Docker image.</p>
                                 <p>Click <a href="${env.BUILD_URL}input">here</a> to approve or abort.</p>""",
                         to: 'hazeam22@gmail.com' // Replace with your email
                     )
+                    */
                     
                     // Pause execution until user input
                     input message: 'Approve Merge to Main and Docker Build?', ok: 'Proceed'
                 }
             }
         }
-        */
+        
 /*
         stage('Merge to Main') {
             steps {
