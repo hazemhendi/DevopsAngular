@@ -123,22 +123,22 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                         sh '''
-                            // Set config
+                            # Set config
                             git config user.email "MohamedHazem.HENDI@esprit.tn"
                             git config user.name "Jenkins CI"
 
-                            // 1. Fetch all remote branches (essential so Jenkins knows 'main' exists)
+                            # 1. Fetch all remote branches (essential so Jenkins knows 'main' exists)
                             git fetch --all
 
-                            // 2. Create/Reset local 'main' to match 'origin/main'
-                            // -B is safer than checkout because it creates the branch if it doesn't exist
+                            # 2. Create/Reset local 'main' to match 'origin/main'
+                            # -B is safer than checkout because it creates the branch if it doesn't exist
                             git checkout -B main origin/main
 
-                            // 3. Merge dev. 
-                            // We use 'origin/dev' because local 'dev' might not be fully tracked
+                            # 3. Merge dev. 
+                            # We use 'origin/dev' because local 'dev' might not be fully tracked
                             git merge origin/dev
 
-                            // 4. Push
+                            # 4. Push
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mohamedhazemhendi/DevopsAngular.git main
                         '''
                     }
