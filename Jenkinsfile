@@ -128,7 +128,10 @@ pipeline {
                             git config user.name "Jenkins CI"
 
                             # 1. Fetch all remote branches (essential so Jenkins knows 'main' exists)
-                            git fetch --all
+                            #git fetch --all
+                            
+                            # Fetch ALL branches explicitly
+                            git fetch origin +refs/heads/*:refs/remotes/origin/*
 
                             # 2. Create/Reset local 'main' to match 'origin/main'
                             # -B is safer than checkout because it creates the branch if it doesn't exist
