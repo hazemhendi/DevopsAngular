@@ -69,7 +69,7 @@ pipeline {
         */
 
          // This stage pauses the pipeline and waits for you to click "Proceed"
-         
+
         /*
         // Generate a Google App Password for this to work 
 
@@ -90,21 +90,55 @@ pipeline {
             }
         }
         */
-
+/*
         stage('Merge to Main') {
             steps {
                 script {
                     // Logic to merge dev to main
                     withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                        sh '''
+                        sh """
                             git config user.email "MohamedHazem.HENDI@esprit.tn"
                             git config user.name "Jenkins CI"
+                            
+                            // to fech te main branche 
+                            git fetch --all
 
-                            git checkout main
+                            //git checkout main
+                            // 2. Create/Reset local 'main' to match 'origin/main'
+                            // -B is safer than checkout because it creates the branch if it doesn't exist
+                            git checkout -B main origin/main
                             git pull origin main
 
                             git merge dev
 
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mohamedhazemhendi/DevopsAngular.git main
+                        """
+                    }
+                }
+            }
+        }
+        */
+        stage('Merge to Main') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'github-creds', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        sh '''
+                            // Set config
+                            git config user.email "MohamedHazem.HENDI@esprit.tn"
+                            git config user.name "Jenkins CI"
+
+                            // 1. Fetch all remote branches (essential so Jenkins knows 'main' exists)
+                            git fetch --all
+
+                            // 2. Create/Reset local 'main' to match 'origin/main'
+                            // -B is safer than checkout because it creates the branch if it doesn't exist
+                            git checkout -B main origin/main
+
+                            // 3. Merge dev. 
+                            // We use 'origin/dev' because local 'dev' might not be fully tracked
+                            git merge origin/dev
+
+                            // 4. Push
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mohamedhazemhendi/DevopsAngular.git main
                         '''
                     }
@@ -150,20 +184,20 @@ pipeline {
 
     post {
         success {
-            emailext (
+            mail to: 'hazeam22@gmail.com',
                 subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """<p>Pipeline completed successfully!</p>
-                        <p>Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}</p>""",
-                to: 'hazeam22@gmail.com'
-            )
+                        <p>Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}</p>"""
+                
+            
         }
         failure {
-            emailext (
+            mail to: 'hazeam22@gmail.com',
                 subject: "FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """<p>Pipeline failed. Check the logs at <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
-                        <p>Stage failed: ${env.STAGE_NAME}</p>""",
-                to: 'hazeam22@gmail.com'
-            )
+                        <p>Stage failed: ${env.STAGE_NAME}</p>"""
+                
+            
         }
     }
 }
