@@ -129,7 +129,7 @@ pipeline {
 
                             # 1. Fetch all remote branches (essential so Jenkins knows 'main' exists)
                             #git fetch --all
-                            
+
                             # Fetch ALL branches explicitly
                             git fetch origin +refs/heads/*:refs/remotes/origin/*
 
@@ -187,7 +187,7 @@ pipeline {
 
     post {
         success {
-            mail to: 'hazeam22@gmail.com',
+            mail to: 'MohamedHazem.HENDI@esprit.tn',
                 subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """<p>Pipeline completed successfully!</p>
                         <p>Image pushed: ${IMAGE_NAME}:${IMAGE_TAG}</p>"""
@@ -195,7 +195,7 @@ pipeline {
             
         }
         failure {
-            mail to: 'hazeam22@gmail.com',
+            mail to: 'MohamedHazem.HENDI@esprit.tn',
                 subject: "FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """<p>Pipeline failed. Check the logs at <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
                         <p>Stage failed: ${env.STAGE_NAME}</p>"""
